@@ -2627,6 +2627,283 @@
       }
     }
 
+  
+    /* =========================================================
+       FINAL HERO COLOUR + FLOWING MOTION REFINEMENT
+       ========================================================= */
+
+    :root {
+      --hero-title: #f4efe6;
+      --hero-subtitle: #e9e1d5;
+      --hero-body: #f1ece3;
+      --hero-accent: #d8c7b5;
+      --flow-ease: cubic-bezier(.22, 1, .36, 1);
+    }
+
+    /* Warm architectural contrast over the existing home image */
+    .hero {
+      color: var(--hero-title);
+    }
+
+    .hero-media::before {
+      background:
+        linear-gradient(
+          180deg,
+          rgba(20,27,21,.43) 0%,
+          rgba(20,27,21,.27) 38%,
+          rgba(20,27,21,.38) 67%,
+          rgba(20,27,21,.56) 100%
+        ),
+        linear-gradient(
+          90deg,
+          rgba(20,27,21,.30) 0%,
+          rgba(20,27,21,.08) 48%,
+          rgba(20,27,21,.20) 100%
+        );
+    }
+
+    .hero-media::after {
+      background:
+        radial-gradient(
+          circle at 50% 43%,
+          transparent 0 23%,
+          rgba(13,22,15,.10) 60%,
+          rgba(13,22,15,.24) 100%
+        );
+    }
+
+    .hero-kicker {
+      color: var(--hero-accent);
+      opacity: 1;
+      text-shadow: 0 2px 20px rgba(0,0,0,.26);
+    }
+
+    .hero h1 {
+      color: var(--hero-title);
+      text-shadow:
+        0 3px 12px rgba(0,0,0,.18),
+        0 18px 52px rgba(0,0,0,.28);
+    }
+
+    .hero h1 span {
+      color: var(--hero-subtitle);
+      text-shadow: 0 3px 20px rgba(0,0,0,.30);
+    }
+
+    .hero-copy {
+      color: var(--hero-body);
+      text-shadow: 0 3px 22px rgba(0,0,0,.34);
+    }
+
+    .scroll-mark {
+      color: var(--hero-subtitle);
+    }
+
+    .scroll-mark::before {
+      background: linear-gradient(
+        to bottom,
+        var(--hero-title),
+        rgba(244,239,230,0)
+      );
+    }
+
+    .button-light {
+      background: var(--hero-title);
+      color: var(--green-950);
+      border-color: rgba(244,239,230,.88);
+      box-shadow: 0 18px 48px rgba(0,0,0,.20);
+    }
+
+    .button-ghost {
+      color: var(--hero-title);
+      border-color: rgba(244,239,230,.72);
+      background: rgba(24,31,25,.16);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.035);
+    }
+
+    .button-light:hover {
+      background: #fffaf2;
+      box-shadow: 0 22px 56px rgba(0,0,0,.24);
+    }
+
+    .button-ghost:hover {
+      background: rgba(244,239,230,.13);
+      border-color: rgba(244,239,230,.92);
+    }
+
+    /* Smoother, less mechanical reveal movement */
+    .reveal {
+      transform: translate3d(0, 48px, 0) scale(.995);
+      transition:
+        opacity 1.18s var(--flow-ease),
+        transform 1.34s var(--flow-ease);
+    }
+
+    .reveal.delay-1 { transition-delay: .16s; }
+    .reveal.delay-2 { transition-delay: .30s; }
+
+    .hero .hero-kicker.reveal {
+      transform: translate3d(0, 28px, 0);
+      transition-delay: .12s;
+    }
+
+    .hero h1.reveal {
+      transform: translate3d(0, 50px, 0) scale(.975);
+      transition-duration: 1.42s;
+      transition-delay: .22s;
+    }
+
+    .hero .hero-copy.reveal {
+      transform: translate3d(0, 34px, 0);
+      transition-delay: .42s;
+    }
+
+    .hero .hero-actions.reveal {
+      transform: translate3d(0, 28px, 0);
+      transition-delay: .56s;
+    }
+
+    .hero .reveal.is-visible {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    .manifesto-quote.reveal {
+      transform: translate3d(-48px, 28px, 0) rotate(-.3deg);
+    }
+
+    .manifesto-copy > .reveal {
+      transform: translate3d(44px, 32px, 0);
+    }
+
+    .team-grid .person:first-child.reveal {
+      transform: translate3d(-56px, 42px, 0) rotate(-.35deg) scale(.992);
+    }
+
+    .team-grid .person:last-child.reveal {
+      transform: translate3d(56px, 42px, 0) rotate(.35deg) scale(.992);
+    }
+
+    .project:not(.reverse) .project-media.reveal {
+      transform: translate3d(-52px, 38px, 0) scale(.994);
+    }
+
+    .project:not(.reverse) .project-copy.reveal {
+      transform: translate3d(48px, 34px, 0);
+    }
+
+    .project.reverse .project-media.reveal {
+      transform: translate3d(52px, 38px, 0) scale(.994);
+    }
+
+    .project.reverse .project-copy.reveal {
+      transform: translate3d(-48px, 34px, 0);
+    }
+
+    .contact-card.reveal {
+      transform: translate3d(-48px, 38px, 0) rotate(-.25deg);
+    }
+
+    .contact-form.reveal {
+      transform: translate3d(48px, 38px, 0);
+    }
+
+    .motion-ready .project-primary {
+      transition:
+        opacity .78s ease,
+        clip-path 1.62s var(--flow-ease),
+        transform .1s linear;
+    }
+
+    .motion-ready .project-secondary {
+      transform: translate3d(26px, 42px, 0) scale(.94) rotate(.35deg);
+      transition:
+        opacity .9s ease .24s,
+        transform 1.5s var(--flow-ease) .18s;
+    }
+
+    .motion-ready .project.reverse .project-secondary {
+      transform: translate3d(-26px, 42px, 0) scale(.94) rotate(-.35deg);
+    }
+
+    .service-item.reveal {
+      transform: translate3d(0, 52px, 0);
+      transition-duration: 1.22s;
+    }
+
+    .client-logo {
+      transition:
+        opacity 1.12s var(--flow-ease),
+        transform 1.35s var(--flow-ease),
+        border-color .35s ease,
+        box-shadow .35s ease,
+        background .35s ease;
+    }
+
+    /* JavaScript interpolation handles this more smoothly than CSS lag */
+    [data-parallax] {
+      will-change: transform;
+      transition: none !important;
+      backface-visibility: hidden;
+    }
+
+    @media (max-width: 980px) {
+      .team-grid .person:first-child.reveal,
+      .team-grid .person:last-child.reveal,
+      .project:not(.reverse) .project-media.reveal,
+      .project:not(.reverse) .project-copy.reveal,
+      .project.reverse .project-media.reveal,
+      .project.reverse .project-copy.reveal,
+      .contact-card.reveal,
+      .contact-form.reveal,
+      .manifesto-quote.reveal,
+      .manifesto-copy > .reveal {
+        transform: translate3d(0, 40px, 0) scale(.996);
+      }
+
+      .team-grid .person.reveal.is-visible,
+      .project .project-media.reveal.is-visible,
+      .project .project-copy.reveal.is-visible,
+      .contact-card.reveal.is-visible,
+      .contact-form.reveal.is-visible,
+      .manifesto-quote.reveal.is-visible,
+      .manifesto-copy > .reveal.is-visible {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .reveal {
+        transform: translate3d(0, 34px, 0) scale(.997);
+        transition-duration: 1.05s;
+      }
+
+      .hero h1.reveal {
+        transform: translate3d(0, 38px, 0) scale(.985);
+      }
+
+      .hero-media::before {
+        background:
+          linear-gradient(
+            180deg,
+            rgba(20,27,21,.46) 0%,
+            rgba(20,27,21,.28) 38%,
+            rgba(20,27,21,.42) 70%,
+            rgba(20,27,21,.62) 100%
+          );
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal,
+      .motion-ready .project-primary,
+      .motion-ready .project-secondary {
+        opacity: 1 !important;
+        clip-path: none !important;
+        transform: none !important;
+        transition: none !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -3094,27 +3371,71 @@ across diverse construction and fit-out projects.</p>
     sections.forEach(section => activeObserver.observe(section));
 
     if (!reduceMotion && !window.matchMedia('(max-width: 768px)').matches) {
-      const parallaxItems = [...document.querySelectorAll('[data-parallax]')];
-      let ticking = false;
-      function updateParallax() {
+      const parallaxStates = [...document.querySelectorAll('[data-parallax]')].map(item => ({
+        item,
+        current: 0,
+        target: 0
+      }));
+
+      let parallaxFrame = 0;
+      let parallaxRunning = false;
+
+      function readParallaxTargets() {
         const viewport = window.innerHeight;
-        parallaxItems.forEach(item => {
-          const rect = item.getBoundingClientRect();
-          if (rect.bottom < -100 || rect.top > viewport + 100) return;
-          const speed = Number(item.dataset.parallax || 0.04);
+
+        parallaxStates.forEach(state => {
+          const anchor = state.item.parentElement || state.item;
+          const rect = anchor.getBoundingClientRect();
+
+          if (rect.bottom < -160 || rect.top > viewport + 160) return;
+
+          const speed = Number(state.item.dataset.parallax || 0.04);
           const centerOffset = (rect.top + rect.height / 2) - viewport / 2;
-          item.style.transform = `translate3d(0, ${centerOffset * -speed}px, 0) scale(1.04)`;
+          state.target = Math.max(-72, Math.min(72, centerOffset * -speed));
         });
-        ticking = false;
       }
-      window.addEventListener('scroll', () => {
-        if (!ticking) {
-          requestAnimationFrame(updateParallax);
-          ticking = true;
+
+      function animateParallax() {
+        let moving = false;
+
+        parallaxStates.forEach(state => {
+          state.current += (state.target - state.current) * 0.075;
+
+          if (Math.abs(state.target - state.current) > 0.02) {
+            moving = true;
+          }
+
+          state.item.style.transform =
+            `translate3d(0, ${state.current.toFixed(3)}px, 0) scale(1.04)`;
+        });
+
+        if (moving) {
+          parallaxFrame = requestAnimationFrame(animateParallax);
+        } else {
+          parallaxRunning = false;
+          parallaxFrame = 0;
         }
-      }, { passive: true });
-      window.addEventListener('resize', updateParallax);
-      updateParallax();
+      }
+
+      function requestParallaxUpdate() {
+        readParallaxTargets();
+
+        if (!parallaxRunning) {
+          parallaxRunning = true;
+          parallaxFrame = requestAnimationFrame(animateParallax);
+        }
+      }
+
+      readParallaxTargets();
+      parallaxStates.forEach(state => {
+        state.current = state.target;
+        state.item.style.transform =
+          `translate3d(0, ${state.current.toFixed(3)}px, 0) scale(1.04)`;
+      });
+
+      window.addEventListener('scroll', requestParallaxUpdate, { passive: true });
+      window.addEventListener('resize', requestParallaxUpdate);
+      window.addEventListener('load', requestParallaxUpdate);
     }
 
     document.getElementById('contactForm').addEventListener('submit', event => {
@@ -3203,7 +3524,7 @@ across diverse construction and fit-out projects.</p>
       };
 
       const animate = () => {
-        const easing = 0.085;
+        const easing = 0.072;
         let needsAnotherFrame = false;
 
         currentPageProgress += (targetPageProgress - currentPageProgress) * easing;
