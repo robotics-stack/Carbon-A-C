@@ -15,7 +15,7 @@
   <meta name="theme-color" content="#405640">
 
   <link rel="canonical" href="https://www.thecarboninc.com/">
-  <link rel="icon" type="image/svg+xml" href="assets/carbonlogo.png">
+  <link rel="icon" type="image/png" href="assets/carbonlogo.png">
   <link rel="apple-touch-icon" href="assets/carbonlogo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,7 +43,7 @@
     "name": "Carbon Architecture & Contracting LLC",
     "alternateName": "Carbon A&C",
     "url": "https://www.thecarboninc.com/",
-    "logo": "https://www.thecarboninc.com/assets/logo.png",
+    "logo": "https://www.thecarboninc.com/assets/carbonlogo.png",
     "image": "https://www.thecarboninc.com/assets/og-image.jpg",
     "description": "A Muscat-based architecture, hospitality interior design, interior fit-out, renovation and bespoke FF&E specialist.",
     "telephone": "+968-24-000-742",
@@ -229,9 +229,11 @@
       width: clamp(188px, 17vw, 260px);
     }
     .brand img {
+      display: block;
       width: 100%;
-      filter: brightness(0) invert(1);
-      transition: filter .35s ease;
+      height: auto;
+      object-fit: contain;
+      filter: none;
     }
     .site-header.scrolled .brand img { filter: none; }
     .nav-links {
@@ -1789,7 +1791,7 @@
   <header class="site-header" id="siteHeader">
     <nav class="nav" aria-label="Main navigation">
       <a class="brand" href="#home" aria-label="Carbon Architecture and Contracting home">
-        <img src="assets/logo.png" alt="Carbon Architecture and Contracting LLC">
+        <img src="assets/carbonlogo.png" alt="Carbon Architecture and Contracting LLC">
       </a>
       <div class="nav-links" id="navLinks">
         <a href="#about">About</a>
@@ -2183,7 +2185,7 @@ and 5-star hotels, resorts, serviced apartments, and mixed-use developments.</p>
 
   <footer class="footer">
     <div class="container footer-grid">
-      <img class="footer-brand" src="assets/logo.png" alt="Carbon Architecture and Contracting LLC">
+      <img class="footer-brand" src="assets/carbonlogo.png" alt="Carbon Architecture and Contracting LLC">
       <span>© <span id="year"></span> Carbon Architecture &amp; Contracting LLC. All rights reserved.</span>
       <a class="back-top" href="#home">Back to top ↑</a>
     </div>
