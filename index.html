@@ -80,6 +80,14 @@
   }
   </script>
 
+
+  <script>
+    document.documentElement.classList.add('ux-booting');
+    window.setTimeout(() => {
+      document.documentElement.classList.remove('ux-booting');
+    }, 2600);
+  </script>
+
   <style>
     :root {
       --green-950: #243126;
@@ -2948,9 +2956,528 @@
       }
     }
 
+  
+    /* =========================================================
+       CARBON SIGNATURE EXPERIENCE
+       Decorative interaction only. Existing design remains intact.
+       ========================================================= */
+
+    :root {
+      --ux-ease: cubic-bezier(.22, 1, .36, 1);
+      --ux-page-progress: 0;
+      --ux-scroll-velocity: 0;
+      --ux-pointer-x: 50%;
+      --ux-pointer-y: 50%;
+    }
+
+    html {
+      scrollbar-color: rgba(64,86,64,.48) var(--ivory);
+      scrollbar-width: thin;
+    }
+
+    html.ux-booting {
+      overflow: hidden;
+    }
+
+    body::-webkit-scrollbar {
+      width: 9px;
+    }
+
+    body::-webkit-scrollbar-track {
+      background: var(--ivory);
+    }
+
+    body::-webkit-scrollbar-thumb {
+      border: 2px solid var(--ivory);
+      border-radius: 999px;
+      background: linear-gradient(var(--sand-300), var(--green-700));
+    }
+
+    :where(a, button, input, textarea):focus-visible {
+      outline: 2px solid var(--sand-500);
+      outline-offset: 4px;
+    }
+
+    /* Architectural entrance */
+    .ux-intro {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: var(--green-950);
+      pointer-events: auto;
+      isolation: isolate;
+      transition:
+        opacity .65s ease .52s,
+        visibility 0s linear 1.25s;
+    }
+
+    .ux-intro::before,
+    .ux-intro::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50.5%;
+      z-index: -1;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.035), transparent 42%),
+        var(--green-950);
+      transition: transform 1.18s var(--ux-ease);
+      will-change: transform;
+    }
+
+    .ux-intro::before {
+      left: 0;
+      border-right: 1px solid rgba(244,239,230,.11);
+    }
+
+    .ux-intro::after {
+      right: 0;
+      border-left: 1px solid rgba(244,239,230,.11);
+    }
+
+    .ux-intro-mark {
+      position: relative;
+      width: clamp(104px, 13vw, 178px);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(244,239,230,.24);
+      border-radius: 50%;
+      color: var(--hero-title, #f4efe6);
+      opacity: 0;
+      transform: scale(.72) rotate(-8deg);
+      animation: uxMarkIn 1.05s var(--ux-ease) .08s forwards;
+    }
+
+    .ux-intro-mark::before {
+      content: "C";
+      font-family: var(--serif);
+      font-size: clamp(5rem, 10vw, 8rem);
+      font-weight: 500;
+      line-height: 1;
+      transform: translateY(-.035em);
+    }
+
+    .ux-intro-mark::after {
+      content: "";
+      position: absolute;
+      inset: 11px;
+      border: 1px solid rgba(223,190,166,.20);
+      border-radius: inherit;
+    }
+
+    .ux-intro-line {
+      position: absolute;
+      left: 50%;
+      bottom: clamp(50px, 9vh, 96px);
+      width: min(230px, 42vw);
+      height: 1px;
+      background: rgba(244,239,230,.14);
+      transform: translateX(-50%);
+      overflow: hidden;
+    }
+
+    .ux-intro-line::after {
+      content: "";
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, var(--sand-300), transparent);
+      transform: translateX(-100%);
+      animation: uxLineTravel 1.3s var(--ux-ease) .18s forwards;
+    }
+
+    .ux-intro.is-leaving {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .ux-intro.is-leaving::before {
+      transform: translate3d(-102%, 0, 0);
+    }
+
+    .ux-intro.is-leaving::after {
+      transform: translate3d(102%, 0, 0);
+    }
+
+    .ux-intro.is-leaving .ux-intro-mark,
+    .ux-intro.is-leaving .ux-intro-line {
+      opacity: 0;
+      transform: translate3d(0, -12px, 0) scale(.96);
+      transition: opacity .35s ease, transform .5s var(--ux-ease);
+    }
+
+    @keyframes uxMarkIn {
+      to {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+      }
+    }
+
+    @keyframes uxLineTravel {
+      to { transform: translateX(100%); }
+    }
+
+    /* Keep the hero ready behind the intro, then release it cleanly */
+    html.ux-booting .hero .reveal {
+      opacity: 0 !important;
+      transform: translate3d(0, 38px, 0) scale(.985) !important;
+    }
+
+    /* Chapter rail */
+    .ux-rail {
+      position: fixed;
+      right: 20px;
+      top: 50%;
+      z-index: 820;
+      display: grid;
+      gap: 13px;
+      padding: 16px 10px;
+      transform: translateY(-50%);
+      border: 1px solid rgba(38,49,40,.10);
+      border-radius: 999px;
+      background: rgba(255,253,248,.58);
+      box-shadow: 0 16px 45px rgba(43,57,45,.08);
+      backdrop-filter: blur(14px) saturate(125%);
+      opacity: 0;
+      translate: 18px 0;
+      transition: opacity .8s ease 1.1s, translate .9s var(--ux-ease) 1.1s;
+    }
+
+    .ux-ready .ux-rail {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    .ux-rail::before,
+    .ux-rail::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 23px;
+      bottom: 23px;
+      width: 1px;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .ux-rail::before {
+      background: rgba(38,49,40,.12);
+    }
+
+    .ux-rail::after {
+      background: linear-gradient(var(--sand-500), var(--green-700));
+      transform: translateX(-50%) scaleY(var(--ux-page-progress));
+      transform-origin: top center;
+      transition: transform .12s linear;
+    }
+
+    .ux-rail-button {
+      position: relative;
+      z-index: 1;
+      width: 12px;
+      height: 12px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .ux-rail-button::before {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-radius: inherit;
+      background: #b8beb5;
+      box-shadow: 0 0 0 4px rgba(255,253,248,.92);
+      transition:
+        transform .35s var(--ux-ease),
+        background .35s ease,
+        box-shadow .35s ease;
+    }
+
+    .ux-rail-button::after {
+      content: attr(data-label);
+      position: absolute;
+      top: 50%;
+      right: 24px;
+      width: max-content;
+      padding: 6px 10px;
+      border: 1px solid rgba(38,49,40,.10);
+      border-radius: 999px;
+      background: rgba(255,253,248,.92);
+      color: var(--green-950);
+      font-family: var(--sans);
+      font-size: .58rem;
+      font-weight: 700;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translate3d(7px, -50%, 0);
+      pointer-events: none;
+      transition: opacity .25s ease, transform .3s var(--ux-ease);
+      white-space: nowrap;
+    }
+
+    .ux-rail-button:hover::after,
+    .ux-rail-button:focus-visible::after {
+      opacity: 1;
+      transform: translate3d(0, -50%, 0);
+    }
+
+    .ux-rail-button.is-active::before {
+      background: var(--green-800);
+      box-shadow:
+        0 0 0 4px rgba(255,253,248,.96),
+        0 0 0 6px rgba(64,86,64,.18);
+      transform: scale(1.2);
+    }
+
+    /* Desktop signature cursor */
+    .ux-cursor-dot,
+    .ux-cursor-ring {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 12000;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      will-change: transform;
+    }
+
+    .ux-cursor-dot {
+      width: 5px;
+      height: 5px;
+      margin: -2.5px 0 0 -2.5px;
+      background: var(--sand-500);
+      box-shadow: 0 0 12px rgba(201,154,123,.45);
+    }
+
+    .ux-cursor-ring {
+      width: 34px;
+      height: 34px;
+      margin: -17px 0 0 -17px;
+      border: 1px solid rgba(64,86,64,.55);
+      background: rgba(255,253,248,.06);
+      backdrop-filter: blur(2px);
+      transition:
+        width .32s var(--ux-ease),
+        height .32s var(--ux-ease),
+        margin .32s var(--ux-ease),
+        border-color .3s ease,
+        background .3s ease,
+        opacity .25s ease;
+    }
+
+    html.ux-cursor-ready body,
+    html.ux-cursor-ready a,
+    html.ux-cursor-ready button,
+    html.ux-cursor-ready .person,
+    html.ux-cursor-ready .client-logo,
+    html.ux-cursor-ready .project-media {
+      cursor: none;
+    }
+
+    html.ux-cursor-ready input,
+    html.ux-cursor-ready textarea {
+      cursor: text;
+    }
+
+    .ux-cursor-visible .ux-cursor-dot,
+    .ux-cursor-visible .ux-cursor-ring {
+      opacity: 1;
+    }
+
+    .ux-cursor-ring.is-interactive {
+      width: 54px;
+      height: 54px;
+      margin: -27px 0 0 -27px;
+      border-color: rgba(201,154,123,.82);
+      background: rgba(223,190,166,.10);
+    }
+
+    .ux-cursor-ring.is-pressed {
+      width: 26px;
+      height: 26px;
+      margin: -13px 0 0 -13px;
+    }
+
+    /* Pointer-responsive material sheen */
+    :is(.person, .client-logo, .project-media, .contact-card) {
+      --ux-card-x: 50%;
+      --ux-card-y: 50%;
+    }
+
+    :is(.person, .client-logo, .project-media, .contact-card)::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      border-radius: inherit;
+      background:
+        radial-gradient(
+          360px circle at var(--ux-card-x) var(--ux-card-y),
+          rgba(255,255,255,.17),
+          transparent 43%
+        );
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .45s ease;
+    }
+
+    :is(.person, .client-logo, .project-media, .contact-card):hover::after {
+      opacity: 1;
+    }
+
+    .client-logo,
+    .contact-card {
+      position: relative;
+      isolation: isolate;
+    }
+
+    /* Project chapter focus */
+    .project {
+      --ux-focus: .76;
+    }
+
+    .project.ux-section-focus {
+      --ux-focus: 1;
+    }
+
+    .project .project-copy,
+    .project .project-media {
+      opacity: var(--ux-focus);
+      transition:
+        opacity .75s ease,
+        filter .75s ease,
+        transform 1.34s var(--motion-ease);
+    }
+
+    .project.ux-section-focus .project-copy,
+    .project.ux-section-focus .project-media {
+      filter: saturate(1);
+    }
+
+    /* Refined tactile feedback without changing layout */
+    .button,
+    .menu-button,
+    .back-top {
+      will-change: transform;
+    }
+
+    .button:active,
+    .menu-button:active {
+      scale: .98;
+    }
+
+    .field {
+      position: relative;
+    }
+
+    .field::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 100%;
+      bottom: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--sand-500), var(--green-700));
+      transition: right .55s var(--ux-ease);
+      pointer-events: none;
+    }
+
+    .field:focus-within::after {
+      right: 0;
+    }
+
+    /* Better touch response */
+    @media (hover: none), (pointer: coarse) {
+      .ux-rail,
+      .ux-cursor-dot,
+      .ux-cursor-ring {
+        display: none !important;
+      }
+
+      .project {
+        --ux-focus: 1;
+      }
+
+      :is(.person, .client-logo, .project-media, .contact-card)::after {
+        display: none;
+      }
+
+      .button,
+      .menu-button,
+      .client-logo,
+      .person {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .button:active,
+      .client-logo:active,
+      .person:active {
+        transform: scale(.985);
+      }
+    }
+
+    @media (max-width: 1180px) {
+      .ux-rail {
+        right: 10px;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .ux-rail {
+        display: none;
+      }
+
+      .project {
+        --ux-focus: 1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .ux-intro-mark {
+        width: 102px;
+      }
+
+      .ux-intro-line {
+        bottom: 54px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html.ux-booting {
+        overflow: auto;
+      }
+
+      .ux-intro {
+        display: none !important;
+      }
+
+      .ux-rail {
+        transition: none;
+      }
+
+      .project {
+        --ux-focus: 1;
+      }
+    }
+
   </style>
 </head>
 <body>
+  <div class="ux-intro" id="uxIntro" aria-hidden="true">
+    <div class="ux-intro-mark"></div>
+    <div class="ux-intro-line"></div>
+  </div>
   <a class="skip-link" href="#main">Skip to content</a>
   <div class="noise" aria-hidden="true"></div>
 
@@ -3412,14 +3939,29 @@ sector.</p>
     }));
 
     if (!reduceMotion) {
-      const revealObserver = new IntersectionObserver((entries, observer) => {
+      const revealObserver = new IntersectionObserver(entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target);
+            requestAnimationFrame(() => {
+              entry.target.classList.add('is-visible');
+            });
+            return;
+          }
+
+          const rect = entry.boundingClientRect;
+          const fullyOutside =
+            rect.bottom < -90 ||
+            rect.top > window.innerHeight + 90;
+
+          if (fullyOutside) {
+            entry.target.classList.remove('is-visible');
           }
         });
-      }, { threshold: 0.12, rootMargin: '0px 0px -7% 0px' });
+      }, {
+        threshold: [0, 0.12],
+        rootMargin: '0px 0px -7% 0px'
+      });
+
       revealItems.forEach(item => revealObserver.observe(item));
     } else {
       revealItems.forEach(item => item.classList.add('is-visible'));
@@ -3584,11 +4126,23 @@ sector.</p>
       const sectionObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('motion-active');
+            requestAnimationFrame(() => {
+              entry.target.classList.add('motion-active');
+            });
+            return;
+          }
+
+          const rect = entry.boundingClientRect;
+          const fullyOutside =
+            rect.bottom < -130 ||
+            rect.top > window.innerHeight + 130;
+
+          if (fullyOutside) {
+            entry.target.classList.remove('motion-active');
           }
         });
       }, {
-        threshold: 0.1,
+        threshold: [0, 0.1],
         rootMargin: '0px 0px -6% 0px'
       });
 
@@ -3678,6 +4232,336 @@ sector.</p>
 
       readTargets();
       requestMotionUpdate();
+    })();
+  </script>
+
+
+  <script>
+    (() => {
+      const EXPERIENCE = {
+        introMinimum: 920,
+        magneticStrength: 0.16,
+        cursorEase: 0.16,
+        railSections: [
+          ['home', 'Home'],
+          ['about', 'About'],
+          ['team', 'Team'],
+          ['projects', 'Projects'],
+          ['clients', 'Clients'],
+          ['services', 'Services'],
+          ['contact', 'Contact']
+        ]
+      };
+
+      const root = document.documentElement;
+      const reduceMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches;
+      const finePointer = window.matchMedia(
+        '(hover: hover) and (pointer: fine)'
+      ).matches;
+
+      /* -------------------------------------------------------
+         Architectural intro
+         ------------------------------------------------------- */
+      const intro = document.getElementById('uxIntro');
+      const introStart = performance.now();
+      let introClosed = false;
+
+      function closeIntro() {
+        if (introClosed) return;
+        introClosed = true;
+
+        const elapsed = performance.now() - introStart;
+        const remaining = Math.max(0, EXPERIENCE.introMinimum - elapsed);
+
+        window.setTimeout(() => {
+          root.classList.remove('ux-booting');
+          root.classList.add('ux-ready');
+
+          if (intro) {
+            intro.classList.add('is-leaving');
+            window.setTimeout(() => intro.remove(), 1450);
+          }
+        }, reduceMotion ? 0 : remaining);
+      }
+
+      if (document.readyState === 'complete') {
+        closeIntro();
+      } else {
+        window.addEventListener('load', closeIntro, { once: true });
+        window.setTimeout(closeIntro, 2200);
+      }
+
+      /* -------------------------------------------------------
+         Chapter rail
+         ------------------------------------------------------- */
+      const railSections = EXPERIENCE.railSections
+        .map(([id, label]) => ({
+          id,
+          label,
+          section: document.getElementById(id)
+        }))
+        .filter(item => item.section);
+
+      const rail = document.createElement('nav');
+      rail.className = 'ux-rail';
+      rail.setAttribute('aria-label', 'Page chapters');
+
+      railSections.forEach((item, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'ux-rail-button';
+        button.dataset.label =
+          `${String(index + 1).padStart(2, '0')} · ${item.label}`;
+        button.setAttribute('aria-label', `Go to ${item.label}`);
+        button.addEventListener('click', () => {
+          item.section.scrollIntoView({
+            behavior: reduceMotion ? 'auto' : 'smooth',
+            block: 'start'
+          });
+        });
+        rail.appendChild(button);
+        item.button = button;
+      });
+
+      document.body.appendChild(rail);
+
+      let activeRailIndex = -1;
+
+      function updateActiveChapter() {
+        const marker = window.innerHeight * 0.46;
+        let bestIndex = 0;
+        let bestDistance = Infinity;
+
+        railSections.forEach((item, index) => {
+          const rect = item.section.getBoundingClientRect();
+          const distance = Math.abs(rect.top - marker);
+
+          if (rect.top <= marker && rect.bottom >= marker) {
+            bestIndex = index;
+            bestDistance = -1;
+            return;
+          }
+
+          if (bestDistance !== -1 && distance < bestDistance) {
+            bestDistance = distance;
+            bestIndex = index;
+          }
+        });
+
+        if (bestIndex === activeRailIndex) return;
+        activeRailIndex = bestIndex;
+
+        railSections.forEach((item, index) => {
+          item.button.classList.toggle('is-active', index === bestIndex);
+          item.button.setAttribute(
+            'aria-current',
+            index === bestIndex ? 'location' : 'false'
+          );
+        });
+      }
+
+      /* -------------------------------------------------------
+         Project focus observer
+         ------------------------------------------------------- */
+      const projects = [...document.querySelectorAll('.project')];
+
+      if (!reduceMotion && projects.length) {
+        const projectFocusObserver = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            entry.target.classList.toggle(
+              'ux-section-focus',
+              entry.isIntersecting
+            );
+          });
+        }, {
+          threshold: .44,
+          rootMargin: '-11% 0px -11% 0px'
+        });
+
+        projects.forEach(project => projectFocusObserver.observe(project));
+      } else {
+        projects.forEach(project => {
+          project.classList.add('ux-section-focus');
+        });
+      }
+
+      /* -------------------------------------------------------
+         Pointer-responsive material sheen
+         ------------------------------------------------------- */
+      if (finePointer && !reduceMotion) {
+        const sheenTargets = [
+          ...document.querySelectorAll(
+            '.person, .client-logo, .project-media, .contact-card'
+          )
+        ];
+
+        sheenTargets.forEach(target => {
+          target.addEventListener('pointermove', event => {
+            const rect = target.getBoundingClientRect();
+            const x = ((event.clientX - rect.left) / rect.width) * 100;
+            const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+            target.style.setProperty('--ux-card-x', `${x.toFixed(2)}%`);
+            target.style.setProperty('--ux-card-y', `${y.toFixed(2)}%`);
+          }, { passive: true });
+        });
+      }
+
+      /* -------------------------------------------------------
+         Magnetic controls
+         ------------------------------------------------------- */
+      if (finePointer && !reduceMotion) {
+        const magneticItems = [
+          ...document.querySelectorAll(
+            '.button, .menu-button, .back-top'
+          )
+        ];
+
+        magneticItems.forEach(item => {
+          item.addEventListener('pointermove', event => {
+            const rect = item.getBoundingClientRect();
+            const dx =
+              event.clientX - (rect.left + rect.width / 2);
+            const dy =
+              event.clientY - (rect.top + rect.height / 2);
+
+            item.style.transform =
+              `translate3d(${(dx * EXPERIENCE.magneticStrength).toFixed(2)}px, ` +
+              `${(dy * EXPERIENCE.magneticStrength).toFixed(2)}px, 0)`;
+          }, { passive: true });
+
+          item.addEventListener('pointerleave', () => {
+            item.style.transform = '';
+          });
+        });
+      }
+
+      /* -------------------------------------------------------
+         Signature cursor
+         ------------------------------------------------------- */
+      if (finePointer && !reduceMotion) {
+        const dot = document.createElement('div');
+        const ring = document.createElement('div');
+        dot.className = 'ux-cursor-dot';
+        ring.className = 'ux-cursor-ring';
+        dot.setAttribute('aria-hidden', 'true');
+        ring.setAttribute('aria-hidden', 'true');
+        document.body.append(dot, ring);
+
+        root.classList.add('ux-cursor-ready');
+
+        let pointerX = window.innerWidth / 2;
+        let pointerY = window.innerHeight / 2;
+        let ringX = pointerX;
+        let ringY = pointerY;
+        let cursorFrame = 0;
+
+        function animateCursor() {
+          ringX += (pointerX - ringX) * EXPERIENCE.cursorEase;
+          ringY += (pointerY - ringY) * EXPERIENCE.cursorEase;
+
+          dot.style.transform =
+            `translate3d(${pointerX}px, ${pointerY}px, 0)`;
+          ring.style.transform =
+            `translate3d(${ringX}px, ${ringY}px, 0)`;
+
+          cursorFrame = requestAnimationFrame(animateCursor);
+        }
+
+        document.addEventListener('pointermove', event => {
+          pointerX = event.clientX;
+          pointerY = event.clientY;
+          root.classList.add('ux-cursor-visible');
+        }, { passive: true });
+
+        document.addEventListener('pointerover', event => {
+          const interactive = event.target.closest(
+            'a, button, .person, .client-logo, .project-media'
+          );
+          ring.classList.toggle('is-interactive', Boolean(interactive));
+        });
+
+        document.addEventListener('pointerdown', () => {
+          ring.classList.add('is-pressed');
+        });
+
+        document.addEventListener('pointerup', () => {
+          ring.classList.remove('is-pressed');
+        });
+
+        document.addEventListener('mouseleave', () => {
+          root.classList.remove('ux-cursor-visible');
+        });
+
+        document.addEventListener('mouseenter', () => {
+          root.classList.add('ux-cursor-visible');
+        });
+
+        cursorFrame = requestAnimationFrame(animateCursor);
+
+        window.addEventListener('pagehide', () => {
+          cancelAnimationFrame(cursorFrame);
+        }, { once: true });
+      }
+
+      /* -------------------------------------------------------
+         Unified scroll experience
+         ------------------------------------------------------- */
+      let lastScrollY = window.scrollY;
+      let lastScrollTime = performance.now();
+      let scrollFrame = 0;
+      let scrollIdleTimer = 0;
+
+      function updateScrollExperience() {
+        const now = performance.now();
+        const currentY = window.scrollY;
+        const distance = currentY - lastScrollY;
+        const elapsed = Math.max(16, now - lastScrollTime);
+        const maxScroll =
+          document.documentElement.scrollHeight - window.innerHeight;
+        const progress =
+          maxScroll > 0 ? Math.min(1, Math.max(0, currentY / maxScroll)) : 0;
+        const velocity =
+          Math.min(1, Math.abs(distance / elapsed) * 1.7);
+
+        root.style.setProperty(
+          '--ux-page-progress',
+          progress.toFixed(5)
+        );
+        root.style.setProperty(
+          '--ux-scroll-velocity',
+          velocity.toFixed(4)
+        );
+
+        updateActiveChapter();
+
+        lastScrollY = currentY;
+        lastScrollTime = now;
+        scrollFrame = 0;
+
+        window.clearTimeout(scrollIdleTimer);
+        scrollIdleTimer = window.setTimeout(() => {
+          root.style.setProperty('--ux-scroll-velocity', '0');
+        }, 120);
+      }
+
+      function requestScrollExperience() {
+        if (!scrollFrame) {
+          scrollFrame = requestAnimationFrame(updateScrollExperience);
+        }
+      }
+
+      window.addEventListener(
+        'scroll',
+        requestScrollExperience,
+        { passive: true }
+      );
+      window.addEventListener('resize', requestScrollExperience);
+      window.addEventListener('load', requestScrollExperience);
+
+      updateScrollExperience();
     })();
   </script>
 
