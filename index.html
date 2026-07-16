@@ -3471,6 +3471,71 @@
       }
     }
 
+  
+    /* =========================================================
+       SMOOTH PERFORMANCE REFINEMENT
+       Reduces cursor latency, transform trailing and GPU overhead.
+       ========================================================= */
+
+    [data-parallax] {
+      transition: none !important;
+      backface-visibility: hidden;
+      transform-style: flat;
+    }
+
+    .hero-media,
+    .project-primary img,
+    .project-secondary img,
+    .person-image img,
+    .reveal,
+    .ux-cursor-dot,
+    .ux-cursor-ring {
+      backface-visibility: hidden;
+    }
+
+    .ux-cursor-dot,
+    .ux-cursor-ring {
+      contain: layout style paint;
+    }
+
+    .ux-cursor-ring {
+      /* A moving backdrop-filter is expensive and causes visible cursor lag. */
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background: rgba(255,253,248,.045);
+    }
+
+    .ux-rail {
+      backdrop-filter: blur(8px) saturate(115%);
+      -webkit-backdrop-filter: blur(8px) saturate(115%);
+    }
+
+    .ux-performance-lite .ux-cursor-dot,
+    .ux-performance-lite .ux-cursor-ring {
+      display: none !important;
+    }
+
+    .ux-performance-lite .ux-rail {
+      background: rgba(255,253,248,.92);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .ux-performance-lite :is(
+      .person,
+      .client-logo,
+      .project-media,
+      .contact-card
+    )::after {
+      display: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      [data-parallax] {
+        transform: none !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -3920,11 +3985,21 @@ sector.</p>
     const revealItems = document.querySelectorAll('.reveal');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    let headerFrame = 0;
+
     function setHeader() {
       header.classList.toggle('scrolled', window.scrollY > 32);
+      headerFrame = 0;
     }
+
+    function requestHeaderUpdate() {
+      if (!headerFrame) {
+        headerFrame = requestAnimationFrame(setHeader);
+      }
+    }
+
     setHeader();
-    window.addEventListener('scroll', setHeader, { passive: true });
+    window.addEventListener('scroll', requestHeaderUpdate, { passive: true });
 
     menuButton.addEventListener('click', () => {
       const open = document.body.classList.toggle('menu-open');
@@ -4008,9 +4083,9 @@ sector.</p>
         let moving = false;
 
         parallaxStates.forEach(state => {
-          state.current += (state.target - state.current) * 0.075;
+          state.current += (state.target - state.current) * 0.22;
 
-          if (Math.abs(state.target - state.current) > 0.02) {
+          if (Math.abs(state.target - state.current) > 0.08) {
             moving = true;
           }
 
@@ -4185,12 +4260,12 @@ sector.</p>
       };
 
       const animate = () => {
-        const easing = 0.072;
+        const easing = 0.18;
         let needsAnotherFrame = false;
 
         currentPageProgress += (targetPageProgress - currentPageProgress) * easing;
 
-        if (Math.abs(targetPageProgress - currentPageProgress) > 0.0002) {
+        if (Math.abs(targetPageProgress - currentPageProgress) > 0.0008) {
           needsAnotherFrame = true;
         }
 
@@ -4204,7 +4279,7 @@ sector.</p>
           currentProgress.set(section, next);
           section.style.setProperty('--section-progress', next.toFixed(5));
 
-          if (Math.abs(target - next) > 0.0002) {
+          if (Math.abs(target - next) > 0.0008) {
             needsAnotherFrame = true;
           }
         });
@@ -4240,8 +4315,9 @@ sector.</p>
     (() => {
       const EXPERIENCE = {
         introMinimum: 920,
-        magneticStrength: 0.16,
-        cursorEase: 0.16,
+        magneticStrength: 0.09,
+        cursorEase: 0.34,
+        cursorStopDistance: 0.08,
         railSections: [
           ['home', 'Home'],
           ['about', 'About'],
@@ -4260,6 +4336,21 @@ sector.</p>
       const finePointer = window.matchMedia(
         '(hover: hover) and (pointer: fine)'
       ).matches;
+
+      const logicalProcessors = navigator.hardwareConcurrency || 8;
+      const deviceMemory = navigator.deviceMemory || 8;
+      const performanceLite =
+        logicalProcessors <= 4 ||
+        deviceMemory <= 4;
+
+      const enhancedPointer =
+        finePointer &&
+        !reduceMotion &&
+        !performanceLite;
+
+      if (performanceLite) {
+        root.classList.add('ux-performance-lite');
+      }
 
       /* -------------------------------------------------------
          Architectural intro
@@ -4390,7 +4481,7 @@ sector.</p>
       /* -------------------------------------------------------
          Pointer-responsive material sheen
          ------------------------------------------------------- */
-      if (finePointer && !reduceMotion) {
+      if (enhancedPointer) {
         const sheenTargets = [
           ...document.querySelectorAll(
             '.person, .client-logo, .project-media, .contact-card'
@@ -4398,13 +4489,48 @@ sector.</p>
         ];
 
         sheenTargets.forEach(target => {
-          target.addEventListener('pointermove', event => {
-            const rect = target.getBoundingClientRect();
-            const x = ((event.clientX - rect.left) / rect.width) * 100;
-            const y = ((event.clientY - rect.top) / rect.height) * 100;
+          let rect = null;
+          let pointerX = 0;
+          let pointerY = 0;
+          let sheenFrame = 0;
 
-            target.style.setProperty('--ux-card-x', `${x.toFixed(2)}%`);
-            target.style.setProperty('--ux-card-y', `${y.toFixed(2)}%`);
+          const renderSheen = () => {
+            sheenFrame = 0;
+            if (!rect) return;
+
+            const x = ((pointerX - rect.left) / rect.width) * 100;
+            const y = ((pointerY - rect.top) / rect.height) * 100;
+
+            target.style.setProperty(
+              '--ux-card-x',
+              `${Math.max(0, Math.min(100, x)).toFixed(2)}%`
+            );
+            target.style.setProperty(
+              '--ux-card-y',
+              `${Math.max(0, Math.min(100, y)).toFixed(2)}%`
+            );
+          };
+
+          target.addEventListener('pointerenter', () => {
+            rect = target.getBoundingClientRect();
+          }, { passive: true });
+
+          target.addEventListener('pointermove', event => {
+            pointerX = event.clientX;
+            pointerY = event.clientY;
+
+            if (!sheenFrame) {
+              sheenFrame = requestAnimationFrame(renderSheen);
+            }
+          }, { passive: true });
+
+          target.addEventListener('pointerleave', () => {
+            rect = null;
+
+            if (sheenFrame) {
+              cancelAnimationFrame(sheenFrame);
+              sheenFrame = 0;
+            }
           }, { passive: true });
         });
       }
@@ -4412,7 +4538,7 @@ sector.</p>
       /* -------------------------------------------------------
          Magnetic controls
          ------------------------------------------------------- */
-      if (finePointer && !reduceMotion) {
+      if (enhancedPointer) {
         const magneticItems = [
           ...document.querySelectorAll(
             '.button, .menu-button, .back-top'
@@ -4420,28 +4546,54 @@ sector.</p>
         ];
 
         magneticItems.forEach(item => {
-          item.addEventListener('pointermove', event => {
-            const rect = item.getBoundingClientRect();
+          let rect = null;
+          let pointerX = 0;
+          let pointerY = 0;
+          let magneticFrame = 0;
+
+          const renderMagnetic = () => {
+            magneticFrame = 0;
+            if (!rect) return;
+
             const dx =
-              event.clientX - (rect.left + rect.width / 2);
+              pointerX - (rect.left + rect.width / 2);
             const dy =
-              event.clientY - (rect.top + rect.height / 2);
+              pointerY - (rect.top + rect.height / 2);
 
             item.style.transform =
               `translate3d(${(dx * EXPERIENCE.magneticStrength).toFixed(2)}px, ` +
               `${(dy * EXPERIENCE.magneticStrength).toFixed(2)}px, 0)`;
+          };
+
+          item.addEventListener('pointerenter', () => {
+            rect = item.getBoundingClientRect();
+          }, { passive: true });
+
+          item.addEventListener('pointermove', event => {
+            pointerX = event.clientX;
+            pointerY = event.clientY;
+
+            if (!magneticFrame) {
+              magneticFrame = requestAnimationFrame(renderMagnetic);
+            }
           }, { passive: true });
 
           item.addEventListener('pointerleave', () => {
+            rect = null;
             item.style.transform = '';
-          });
+
+            if (magneticFrame) {
+              cancelAnimationFrame(magneticFrame);
+              magneticFrame = 0;
+            }
+          }, { passive: true });
         });
       }
 
       /* -------------------------------------------------------
          Signature cursor
          ------------------------------------------------------- */
-      if (finePointer && !reduceMotion) {
+      if (enhancedPointer) {
         const dot = document.createElement('div');
         const ring = document.createElement('div');
         dot.className = 'ux-cursor-dot';
@@ -4457,23 +4609,51 @@ sector.</p>
         let ringX = pointerX;
         let ringY = pointerY;
         let cursorFrame = 0;
+        let cursorVisible = false;
 
-        function animateCursor() {
-          ringX += (pointerX - ringX) * EXPERIENCE.cursorEase;
-          ringY += (pointerY - ringY) * EXPERIENCE.cursorEase;
+        const renderCursor = () => {
+          cursorFrame = 0;
 
-          dot.style.transform =
-            `translate3d(${pointerX}px, ${pointerY}px, 0)`;
+          const deltaX = pointerX - ringX;
+          const deltaY = pointerY - ringY;
+
+          ringX += deltaX * EXPERIENCE.cursorEase;
+          ringY += deltaY * EXPERIENCE.cursorEase;
+
           ring.style.transform =
-            `translate3d(${ringX}px, ${ringY}px, 0)`;
+            `translate3d(${ringX.toFixed(2)}px, ${ringY.toFixed(2)}px, 0)`;
 
-          cursorFrame = requestAnimationFrame(animateCursor);
-        }
+          if (
+            Math.abs(deltaX) > EXPERIENCE.cursorStopDistance ||
+            Math.abs(deltaY) > EXPERIENCE.cursorStopDistance
+          ) {
+            cursorFrame = requestAnimationFrame(renderCursor);
+          }
+        };
+
+        const requestCursorFrame = () => {
+          if (!cursorFrame) {
+            cursorFrame = requestAnimationFrame(renderCursor);
+          }
+        };
 
         document.addEventListener('pointermove', event => {
           pointerX = event.clientX;
           pointerY = event.clientY;
+
+          dot.style.transform =
+            `translate3d(${pointerX}px, ${pointerY}px, 0)`;
+
+          if (!cursorVisible) {
+            cursorVisible = true;
+            ringX = pointerX;
+            ringY = pointerY;
+            ring.style.transform =
+              `translate3d(${ringX}px, ${ringY}px, 0)`;
+          }
+
           root.classList.add('ux-cursor-visible');
+          requestCursorFrame();
         }, { passive: true });
 
         document.addEventListener('pointerover', event => {
@@ -4481,28 +4661,36 @@ sector.</p>
             'a, button, .person, .client-logo, .project-media'
           );
           ring.classList.toggle('is-interactive', Boolean(interactive));
-        });
+        }, { passive: true });
 
         document.addEventListener('pointerdown', () => {
           ring.classList.add('is-pressed');
-        });
+        }, { passive: true });
 
         document.addEventListener('pointerup', () => {
           ring.classList.remove('is-pressed');
-        });
+        }, { passive: true });
 
         document.addEventListener('mouseleave', () => {
+          cursorVisible = false;
           root.classList.remove('ux-cursor-visible');
-        });
+        }, { passive: true });
 
         document.addEventListener('mouseenter', () => {
           root.classList.add('ux-cursor-visible');
+        }, { passive: true });
+
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden && cursorFrame) {
+            cancelAnimationFrame(cursorFrame);
+            cursorFrame = 0;
+          }
         });
 
-        cursorFrame = requestAnimationFrame(animateCursor);
-
         window.addEventListener('pagehide', () => {
-          cancelAnimationFrame(cursorFrame);
+          if (cursorFrame) {
+            cancelAnimationFrame(cursorFrame);
+          }
         }, { once: true });
       }
 
